@@ -1,7 +1,29 @@
-using BuildingBlocks.CQRS;
-using Catalog.API.Models;
-
 namespace Catalog.API.Products.CreateProduct;
+
+/// <summary>
+/// 
+/// </summary> <summary>
+/// 
+/// </summary>
+internal class CreateProductCommandHandler(IDocumentSession session)
+: ICommandHandler<CreateProductCommand, CreateProductResult>
+{
+    public async Task<CreateProductResult> Handle(CreateProductCommand command, CancellationToken cancellation)
+    {
+        var product = new Product
+        {
+            Name = command.Name,
+            Category = command.Category,
+            Description = command.Description,
+            ImageFile = command.ImageFile,
+            Price = command.Price,
+        };
+        session.Store(product);
+        await session.SaveChangesAsync(cancellation);
+
+        return new CreateProductResult(product.Id);
+    }
+}
 
 /// <summary>
 /// 
@@ -42,23 +64,13 @@ public record CreateProductResult(Guid Id);
 /// </summary> <summary>
 /// 
 /// </summary>
-internal class CreateProductCommandHandler : ICommandHandler<CreateProductCommand, CreateProductResult>
+public class CreateProductCommandValidator : AbstractValidator<CreateProductCommand>
 {
-    public async Task<CreateProductResult> Handle(CreateProductCommand command, CancellationToken cancellation)
+    public CreateProductCommandValidator()
     {
-        // create product entity from command object
-        var product = new Product
-        {
-            Name = command.Name,
-            Category = command.Category,
-            Description = command.Description,
-            ImageFile = command.ImageFile,
-            Price = command.Price,
-        };
-
-        // save to database
-
-        // return result
-        return new CreateProductResult(Guid.NewGuid());
+        RuleFor(p => p.Name).NotEmpty().WithMessage("Name is required");
+        RuleFor(p => p.Category).NotEmpty().WithMessage("Category is required");
+        RuleFor(p => p.ImageFile).NotEmpty().WithMessage("Image File is required");
+        RuleFor(p => p.Price).NotEmpty().WithMessage("Price is required");
     }
 }
