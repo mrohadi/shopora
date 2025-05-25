@@ -15,6 +15,12 @@
       "type": "dotnet",
       "request": "launch",
       "projectPath": "${workspaceFolder}/src/Services/Basket/Basket.API/Basket.API.csproj"
+    },
+    {
+      "name": "C#: Discount Debug",
+      "type": "dotnet",
+      "request": "launch",
+      "projectPath": "${workspaceFolder}/src/Services/Discount/Discount.Grpc/Discount.Grpc.csproj"
     }
   ]
 }
