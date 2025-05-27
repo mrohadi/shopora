@@ -9,6 +9,7 @@ EXPOSE 8081
 
 # copy csproj and restore as distinct layers
 FROM mcr.microsoft.com/dotnet/sdk:9.0-alpine AS build
+RUN apk add --no-cache libc6-compat 
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["src/Services/Basket/Basket.API/Basket.API.csproj", "Services/Basket/Basket.API/"]
@@ -16,9 +17,9 @@ COPY ["src/BuildingBlocks/BuildingBlocks/BuildingBlocks.csproj", "BuildingBlocks
 RUN dotnet restore "./Services/Basket/Basket.API/./Basket.API.csproj"
 
 # copy app dependencies and build app
-WORKDIR "/src/Services/Basket/Basket.API"
 COPY src/Services/Basket/Basket.API/. ./Services/Basket/Basket.API/
 COPY src/BuildingBlocks/BuildingBlocks/. ./BuildingBlocks/BuildingBlocks/
+WORKDIR "/src/Services/Basket/Basket.API"
 RUN dotnet build "./Basket.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # publish image

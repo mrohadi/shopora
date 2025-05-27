@@ -1,6 +1,10 @@
+using Basket.API;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the DI container.
+
+// Application Services
 var assembly = typeof(Program).Assembly;
 builder.Services.AddCarter();
 builder.Services.AddMediatR(config =>
@@ -10,14 +14,12 @@ builder.Services.AddMediatR(config =>
     config.AddOpenBehavior(typeof(LogginBehaviour<,>));
 });
 
+// Data Services
 builder.Services.AddMarten(opts =>
 {
     opts.Connection(builder.Configuration.GetConnectionString("Database")!);
     opts.Schema.For<ShoppingCart>().Identity(x => x.UserName);
 }).UseLightweightSessions();
-
-// Register custom exception middleware
-builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 
 builder.Services.AddScoped<IBasketRepository, BasketRespository>();
 builder.Services.Decorate<IBasketRepository, CachedBasketRepository>();
@@ -26,6 +28,27 @@ builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = builder.Configuration.GetConnectionString("Redis");
 });
+
+// Grpc Services
+builder.Services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>(opts =>
+{
+    opts.Address = new Uri(builder.Configuration["GrpcSettings:DiscountUrl"]!);
+})
+// FIX: Do not use this for production
+.ConfigurePrimaryHttpMessageHandler(() =>
+{
+    var handler = new HttpClientHandler
+    {
+        ServerCertificateCustomValidationCallback =
+        HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+    };
+
+    return handler;
+}); ;
+
+// Cross-Cutting Services
+// Register custom exception middleware
+builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 
 builder.Services.AddHealthChecks()
     .AddNpgSql(builder.Configuration.GetConnectionString("Database")!)
