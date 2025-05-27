@@ -24,7 +24,7 @@ RUN dotnet build "./Catalog.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 # publish image
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./Catalog.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./Catalog.API.csproj" --runtime linux-musl-x64 -c $BUILD_CONFIGURATION --self-contained true -o /app/publish /p:UseAppHost=true /p:PublishSingleFile=true /p:PublishTrimmed=true
 
 # final stage/image
 FROM base AS final
