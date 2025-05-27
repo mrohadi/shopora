@@ -16,8 +16,7 @@ public class DiscountService
             .Coupons
             .FirstOrDefaultAsync(x => x.ProductName == request.ProductName);
 
-        if (coupon is null)
-            coupon = new Coupon { ProductName = "No Discount", Amount = 0, Description = "No Discount Desc" };
+        coupon ??= new Coupon { ProductName = "No Discount", Amount = 0, Description = "No Discount Desc" };
 
         logger.LogInformation("Discount is retrieved for ProductName : {productName}, Amount : {amount}", coupon.ProductName, coupon.Amount);
 
@@ -27,8 +26,7 @@ public class DiscountService
 
     public override async Task<CouponModel> CreateDiscount(CreateDiscountRequest request, ServerCallContext context)
     {
-        var coupon = request.Coupon.Adapt<Coupon>();
-        if (coupon is null)
+        var coupon = request.Coupon.Adapt<Coupon>() ??
             throw new RpcException(new Status(StatusCode.InvalidArgument, "Invalid request object."));
 
         dbContext.Coupons.Add(coupon);
@@ -43,10 +41,8 @@ public class DiscountService
 
     public override async Task<CouponModel> UpdateDiscount(UpdateDiscountRequest request, ServerCallContext context)
     {
-        var coupon = request.Coupon.Adapt<Coupon>();
-        if (coupon is null)
+        var coupon = request.Coupon.Adapt<Coupon>() ??
             throw new RpcException(new Status(StatusCode.InvalidArgument, "Invalid request object."));
-
         dbContext.Coupons.Update(coupon);
         await dbContext.SaveChangesAsync();
 
@@ -60,10 +56,8 @@ public class DiscountService
     {
         var coupon = await dbContext
             .Coupons
-            .FirstOrDefaultAsync(x => x.ProductName == request.ProductName);
-
-        if (coupon is null)
-            throw new RpcException(new Status(StatusCode.NotFound, $"Discount with ProductName={request.ProductName} is not found."));
+            .FirstOrDefaultAsync(x => x.ProductName == request.ProductName) ??
+        throw new RpcException(new Status(StatusCode.NotFound, $"Discount with ProductName={request.ProductName} is not found."));
 
         dbContext.Coupons.Remove(coupon);
         await dbContext.SaveChangesAsync();
