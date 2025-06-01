@@ -23,10 +23,10 @@
       "projectPath": "${workspaceFolder}/src/Services/Discount/Discount.Grpc/Discount.Grpc.csproj"
     },
     {
-      "name": "C#: Order Debug",
+      "name": "C#: Ordering Debug",
       "type": "dotnet",
       "request": "launch",
-      "projectPath": "${workspaceFolder}/src/Services/Order/Order.API/Order.API.csproj"
+      "projectPath": "${workspaceFolder}/src/Services/Ordering/Ordering.API/Ordering.API.csproj"
     }
   ]
 }
