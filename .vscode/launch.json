@@ -28,5 +28,16 @@
       "request": "launch",
       "projectPath": "${workspaceFolder}/src/Services/Ordering/Ordering.API/Ordering.API.csproj"
     }
+  ],
+  "compounds": [
+    {
+      "name": "Compound",
+      "configurations": [
+        "C#: Basket Debug",
+        "C#: Catalog Debug",
+        "C#: Discount Debug",
+        "C#: Ordering Debug"
+      ]
+    }
   ]
 }

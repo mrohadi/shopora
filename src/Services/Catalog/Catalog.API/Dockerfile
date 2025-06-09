@@ -16,15 +16,15 @@ COPY ["src/BuildingBlocks/BuildingBlocks/BuildingBlocks.csproj", "BuildingBlocks
 RUN dotnet restore "./Services/Catalog/Catalog.API/./Catalog.API.csproj"
 
 # copy app dependencies and build app
-WORKDIR "/src/Services/Catalog/Catalog.API"
 COPY src/Services/Catalog/Catalog.API/. ./Services/Catalog/Catalog.API/
 COPY src/BuildingBlocks/BuildingBlocks/. ./BuildingBlocks/BuildingBlocks/
+WORKDIR "/src/Services/Catalog/Catalog.API"
 RUN dotnet build "./Catalog.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # publish image
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./Catalog.API.csproj" --runtime linux-musl-x64 -c $BUILD_CONFIGURATION --self-contained true -o /app/publish /p:UseAppHost=true /p:PublishSingleFile=true /p:PublishTrimmed=true
+RUN dotnet publish "./Catalog.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # final stage/image
 FROM base AS final
