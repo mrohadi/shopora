@@ -2,6 +2,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using BuildingBlocks.Behaviours;
+using BuildingBlocks.Messaging.MassTransit;
+using Microsoft.FeatureManagement;
 
 namespace Ordering.Application;
 public static class DependencyInjection
@@ -15,6 +17,9 @@ public static class DependencyInjection
             config.AddOpenBehavior(typeof(ValidationBehaviour<,>));
             config.AddOpenBehavior(typeof(LogginBehaviour<,>));
         });
+
+        services.AddFeatureManagement();
+        services.AddMessageBroker(configuration, Assembly.GetExecutingAssembly());
 
         return services;
     }

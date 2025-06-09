@@ -46,6 +46,9 @@ builder.Services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>(
     return handler;
 }); ;
 
+// Async communication services
+builder.Services.AddMessageBroker(builder.Configuration);
+
 // Cross-Cutting Services
 // Register custom exception middleware
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
